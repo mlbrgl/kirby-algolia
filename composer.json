@@ -1,0 +1,10 @@
+{
+    "require": {
+        "algolia/algoliasearch-client-php": "^1.9"
+    },
+    "autoload": {
+            "psr-4": {
+                "KirbyAlgolia\\": "src/KirbyAlgolia/"
+            }
+    }
+}

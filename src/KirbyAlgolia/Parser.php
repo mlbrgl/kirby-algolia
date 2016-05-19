@@ -17,8 +17,6 @@ line
 --> sending off fragment by code convenience but very little value
 */
 
-// NB: at the moment, 
-
 namespace KirbyAlgolia;
 
 
@@ -31,7 +29,8 @@ class Parser {
   private $records; 
 
   //DEBUG
-  const DEBUG = 1;
+  // TODO option
+  const DEBUG = 0;
   private $debug_path; 
 
   public function __construct($page, $fields, $parsing_type = 'fragment'){
@@ -39,7 +38,9 @@ class Parser {
     $this->fields = $fields;
     $this->parsing_type = $parsing_type; // whether to segment the content in fragments
 
-    if(DEBUG) {
+    // TODO raise an exception if $fields['main'] empty
+
+    if(self::DEBUG) {
       $this->debug_path = __DIR__ . '/parsed.txt';
       if(\f::exists($this->debug_path)){
         \f::remove($this->debug_path);
@@ -56,13 +57,15 @@ class Parser {
         $fragment = array();
         $this->_fragment_init($fragment);
 
-        foreach($this->fields['boost'] as $boost_field) {
-          $fragment['objectID'] = $this->page->id() . '#' . $boost_field;
-          $fragment['_importance'] = 0;
-          $fragment['_content'] = $this->page->$boost_field()->value();
+        if(!empty($this->fields['boost'])) {
+          foreach($this->fields['boost'] as $boost_field) {
+            $fragment['_fragment_id'] = $this->page->id() . '#' . $boost_field;
+            $fragment['_importance'] = 0;
+            $fragment['_content'] = $this->page->$boost_field()->value();
 
-          $this->preprocess_record($fragment);
-          $this->add_record($fragment);
+            $this->preprocess_record($fragment);
+            $this->add_record($fragment);
+          }
         }
 
         // Blank slate. Enables correct detection of the first fragment below 
@@ -72,42 +75,45 @@ class Parser {
         foreach($this->fields['main'] as $main_field) {
           $heading_count = 0; // heading_count is being used to uniquely identify a heading in the content
           
-          // Start breaking up the textarea line by line
-          $line = strtok($this->page->$main_field(), PHP_EOL);
-          while ($line !== false) {
-            
-            // A new heading has been found, a new fragment can be prepared.
-            if(preg_match('/^(#+)\s(.*)$/', $line, $matches)) {
-              $heading_count ++;
+          if(!$this->page->$main_field()->empty()) {
+            // Start breaking up the textarea line by line
+            $line = strtok($this->page->$main_field(), PHP_EOL);
+            while ($line !== false) {
               
-              // Saving the previous fragment as record first, ignoring the first empty initialized fragment
-              if($heading_count != 1) {
-                $this->preprocess_record($fragment);
-                $this->add_record($fragment);
+              // A new heading has been found, a new fragment can be prepared.
+              if(preg_match('/^(#+)\s(.*)$/', $line, $matches)) {
+                $heading_count ++;
+                
+                // Saving the previous fragment as record first, ignoring the first empty initialized fragment
+                if($heading_count != 1) {
+                  $this->preprocess_record($fragment);
+                  $this->add_record($fragment);
+                }
+                
+                // Starting new fragment
+                // TOREVIEW improve performance by avoiding a full reload without compromising readability
+                $this->_fragment_init($fragment);
+                $fragment['_heading'] = $matches[2];
+                $fragment['_fragment_id'] = $this->page->id() 
+                                       . '#' . \str::slug($fragment['_heading']) 
+                                       . '--' . $main_field . $heading_count;
+                $fragment['_content'] = '';
+                // The importance can be used in Algolia as a business metric. It is based on the heading
+                // level. h1 -> importance : 1, h2 -> importance : 2, etc ...
+                // https://blog.algolia.com/how-to-build-a-helpful-search-for-technical-documentation-the-laravel-example/
+                $fragment['_importance'] = strlen($matches[1]);
+              } else {
+                $fragment['_content'] .= $line . PHP_EOL;
               }
-              
-              // Starting new fragment
-              // TOREVIEW improve performance by avoiding a full reload without compromising readability
-              $this->_fragment_init($fragment);
-              $fragment['_heading'] = $matches[2];
-              $fragment['objectID'] = $this->page->id() 
-                                     . '#' . \str::slug($fragment['_heading']) 
-                                     . '--' . $main_field . $heading_count;
-              $fragment['_content'] = '';
-              // The importance can be used in Algolia as a business metric. It is based on the heading
-              // level. h1 -> importance : 1, h2 -> importance : 2, etc ...
-              // https://blog.algolia.com/how-to-build-a-helpful-search-for-technical-documentation-the-laravel-example/
-              $fragment['_importance'] = strlen($matches[1]);
-            } else {
-              $fragment['_content'] .= $line . PHP_EOL;
+              $line = strtok(PHP_EOL);
             }
-            $line = strtok(PHP_EOL);
-          } 
+            
+            // Saving the last record (as saving would only happens as a new heading is found)
+            $this->preprocess_record($fragment);
+            $this->add_record($fragment);
+          }
 
-          // Saving the last record (as saving would only happens as a new heading is found)
-          $this->preprocess_record($fragment);
-          $this->add_record($fragment);
-        }         
+        }     
         break;
 
       default:
@@ -116,17 +122,20 @@ class Parser {
     return $this->get_records();
   }
 
-  // TODO : helper function to be moved
+  // TODO : helper function to be moved ?
+  // Initialize new fragment. Reserved keys are:
+  // - ObjectID
+  // - _heading
+  // - _content
+  // - _importance
   private function _fragment_init(&$fragment) {
-    // Initialize new fragment. Reserved keys are:
-    // - ObjectID
-    // - _heading
-    // - _content
-    // - _importance
+    
     $fragment = array();
 
-    foreach($this->fields['meta'] as $meta_field) {
-      $fragment[$meta_field] = $this->page->$meta_field()->value();
+    if(!empty($this->fields['meta'])) {
+      foreach($this->fields['meta'] as $meta_field) {
+        $fragment[$meta_field] = $this->page->$meta_field()->value();
+      }
     }
   }
 
@@ -145,9 +154,8 @@ class Parser {
    * Add a record to the array of records held by the parser
    */
   public function add_record($record) {
-    if(DEBUG) {
-      \f::write($this->debug_path, '## Adding a new record' . PHP_EOL, true);
-      \f::write($this->debug_path, print_r($record, true), true);
+    if(self::DEBUG) {
+      \f::write($this->debug_path, '## Adding a new record' . PHP_EOL . print_r($record, true), true);
     }
     
     if(!empty($record)){
@@ -160,9 +168,8 @@ class Parser {
    * Returns the records held by the parser
    */
   public function get_records() {
-    if(DEBUG) {
-      \f::write($this->debug_path, '## All parsed records' . PHP_EOL, true);
-      \f::write($this->debug_path, print_r($this->records, true), true);
+    if(self::DEBUG) {
+      \f::write($this->debug_path, '## All parsed records' . PHP_EOL . print_r($this->records, true), true);
     }
     return $this->records;
   }

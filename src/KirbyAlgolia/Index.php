@@ -7,12 +7,10 @@ class Index {
   private $application_id;
   private $index;
   private $api_key;
+  private $records;
 
-  //DEBUG
   //TODO option
-  const DEBUG = 0;
   const ENABLE_INDEXING = 1;
-  private $debug_path;
 
   public function __construct($algolia_settings) {
     //TODO exception
@@ -25,40 +23,58 @@ class Index {
       $this->api_key = $algolia_settings['api_key'];
     }
 
-    if(self::DEBUG) {
-      $this->debug_path = __DIR__ . '/indexed.txt';
-      if(\f::exists($this->debug_path)){
-        \f::remove($this->debug_path);
-      }
-    }
   }
 
-
-  public function save($records, $page, $indexing_type) {
-    if(!empty($records)){
-
-      // Init Algolia's index
-      $client = new \AlgoliaSearch\Client($this->application_id, $this->api_key);
-      $index = $client->initIndex($this->index);
-      
-      if ($indexing_type == 'fragment') {
-        // Before indexing new fragments, we need to remove all fragments of the same previously indexed content,
-        // to prevent leaving ghost fragments in case a heading has been renamed. These fragments all share the 
-        // same root.
-        $index->deleteByQuery($page->id(), array('restrictSearchableAttributes' => '_fragment_id'));
-      }
+  /*
+   * Saves (sends) records to the Algolia index
+   */
+  public function save($indexing_type, $fragments_shared_root = NULL) {
+    if(!empty($this->records)){
 
       if(self::ENABLE_INDEXING){        
-        $res = $index->addObjects($records); 
-        
-        if(self::DEBUG) {
-          \f::write($this->debug_path, '## Returned by addObjects' . PHP_EOL . print_r($res, true), true);
-        } 
+      
+        // Init Algolia's index
+        $client = new \AlgoliaSearch\Client($this->application_id, $this->api_key);
+        $index = $client->initIndex($this->index);
+
+        switch ($indexing_type) {
+          case 'fragment':
+            // Before indexing new fragments, we need to remove all fragments of the same previously indexed content,
+            // to prevent leaving ghost fragments in case a heading has been renamed. These fragments all share the 
+            // same root.
+            $index->deleteByQuery($fragments_shared_root, array('restrictSearchableAttributes' => '_fragment_id'));
+            
+            break;
+
+          case 'multiple':
+            // The index is cleared as the batch indexing process is blind and does not
+            // keep track of what has been indexed or not. This is for the moment the only
+            // way to avoid creating duplicates in the index.
+            $index->clearIndex();
+
+            break;
+
+          default:
+            break;
+        }
+
+        // Sending indexing query to Algolia
+        $res = $index->addObjects($this->records); 
       }
       
     }
     
   }
+
+  /*
+   * Add records to the internal array for batch indexing
+   */
+  public function add($records) {
+    foreach($records as $record) {
+      $this->records[] = $record; 
+    }
+  }
+
 
 }
 

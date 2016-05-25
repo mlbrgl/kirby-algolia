@@ -36,6 +36,9 @@ c::set('kirby-algolia', array(
     'meta' => array('title', 'author'), // example, optional.
     'boost' => array('teaser'), // example, optional
     'main' => array('text') // example, required
+  ),
+  'content' => array(
+    'types' => array('article') //example, required
   )
 ));
 ```
@@ -51,6 +54,10 @@ Each `fields` array is an array of field ids (defined in the site blueprints):
 - `main` : this is where you main content lives. Fragmentation will happen when a new heading is found.
   - Expects Markdown or Kirby's markdown flavor
 
+`content`:
+
+- `types`: what content types to index 
+
 ## Quick start
 
 1. Set the configuration options.
@@ -62,8 +69,8 @@ Each `fields` array is an array of field ids (defined in the site blueprints):
 - ~~Delete fragments before indexing new ones~~
 - ~~Move settings to config file~~
 - Non changeable (auto-increment?) page ID to be able to delete fragments when the path to the page (currently page ID) is being changed  
-- Batch indexing
-- Config option to select the type of content that gets indexed
+- ~~Batch indexing~~
+- ~~Config option to select the type of content that gets indexed~~
 
 
 ## Known limitations

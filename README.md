@@ -21,6 +21,8 @@ where
 - [URL] is this repository URL
 - KIRBY_ROOT is the folder where you Kirby site lives
 
+Then, run `composer install`.
+
 ### Configuration
 
 In [KIRBY_ROOT]/site/config/config.php, add the configuration options:

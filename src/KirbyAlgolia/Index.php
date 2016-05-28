@@ -4,53 +4,52 @@ namespace KirbyAlgolia;
 
 class Index {
 
-  private $application_id;
+  private $settings;
   private $index;
-  private $api_key;
   private $records;
 
-  //TODO option
-  const ENABLE_INDEXING = 1;
+  private $dry_run = FALSE;
 
-  public function __construct($algolia_settings) {
-    //TODO exception
-    if(  !empty($algolia_settings['application_id'])
-      && !empty($algolia_settings['index'])
-      && !empty($algolia_settings['api_key'])) {
-    
-      $this->application_id = $algolia_settings['application_id'];
-      $this->index = $algolia_settings['index'];
-      $this->api_key = $algolia_settings['api_key'];
+  public function __construct($settings) {
+    //TODO exception if missing elements
+    $this->settings = $settings;
+
+    if(!empty($settings['debug']) && in_array('dry_run', $settings['debug'])) {
+      $this->dry_run = TRUE;
+    } else {
+      // Init Algolia's index
+      $client = new \AlgoliaSearch\Client($settings['algolia']['application_id'], $settings['algolia']['api_key']);
+      $this->index = $client->initIndex($settings['algolia']['index']);
     }
-
   }
 
   /*
-   * Saves (sends) records to the Algolia index
+   * Updates records in the Algolia index by removing relevant records first.
+   *
+   * @param      string  $type     'fragments'|'multiple'
+   * @param      <type>  $options  'base_id'
    */
-  public function save($indexing_type, $fragments_shared_root = NULL) {
+  public function update($type, $options = NULL) {
     if(!empty($this->records)){
 
-      if(self::ENABLE_INDEXING){        
+      if(!$this->dry_run){        
       
-        // Init Algolia's index
-        $client = new \AlgoliaSearch\Client($this->application_id, $this->api_key);
-        $index = $client->initIndex($this->index);
-
-        switch ($indexing_type) {
-          case 'fragment':
+        switch ($type) {
+          case 'fragments':
             // Before indexing new fragments, we need to remove all fragments of the same previously indexed content,
             // to prevent leaving ghost fragments in case a heading has been renamed. These fragments all share the 
-            // same root.
-            $index->deleteByQuery($fragments_shared_root, array('restrictSearchableAttributes' => '_fragment_id'));
+            // same base id.
+            if(!empty($options['base_id'])) {
+              $this->delete_fragments($options['base_id']);
+            }
             
             break;
 
-          case 'multiple':
+          case 'batch':
             // The index is cleared as the batch indexing process is blind and does not
             // keep track of what has been indexed or not. This is for the moment the only
             // way to avoid creating duplicates in the index.
-            $index->clearIndex();
+            $this->index->clearIndex();
 
             break;
 
@@ -59,7 +58,7 @@ class Index {
         }
 
         // Sending indexing query to Algolia
-        $res = $index->addObjects($this->records); 
+        $this->index->addObjects($this->records); 
       }
       
     }
@@ -67,11 +66,27 @@ class Index {
   }
 
   /*
-   * Add records to the internal array for batch indexing
+   * Add records to the internal array for batch indexing.
+   *
+   * The records will only be saved after a call to update().
+   *
+   * @param      array  $records  The records
    */
   public function add($records) {
     foreach($records as $record) {
       $this->records[] = $record; 
+    }
+  }
+
+  /*
+   * Removed all fragments sharing the base id (all paragraphs of the same
+   * content)
+   *
+   * @param      string  $fragments_base_id  The fragments base identifier
+   */
+  public function delete_fragments($base_id) {
+    if(!$this->dry_run) {
+      $this->index->deleteByQuery($base_id, array('restrictSearchableAttributes' => '_id'));
     }
   }
 

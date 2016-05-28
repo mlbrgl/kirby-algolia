@@ -41,7 +41,8 @@ c::set('kirby-algolia', array(
   ),
   'content' => array(
     'types' => array('article') //example, required
-  )
+  ),
+  //'debug' => array('dry_run')
 ));
 ```
 
@@ -60,6 +61,8 @@ Each `fields` array is an array of field ids (defined in the site blueprints):
 
 - `types`: what content types to index 
 
+`debug`: debug options. Use `dry_run` to run the indexing process without communicating with Algolia. 
+
 ## Quick start
 
 1. Set the configuration options.
@@ -70,11 +73,12 @@ Each `fields` array is an array of field ids (defined in the site blueprints):
 
 - ~~Delete fragments before indexing new ones~~
 - ~~Move settings to config file~~
-- Non changeable (auto-increment?) page ID to be able to delete fragments when the path to the page (currently page ID) is being changed  
 - ~~Batch indexing~~
 - ~~Config option to select the type of content that gets indexed~~
+- ~~Delete, move, hide, show scenarios~~
 
 
 ## Known limitations
 
+- Date fields are converted to timestamp (only format supported by Algolia for sorting) only if the date field is either called `date` or `datetime` and if it is listed in the `meta` fields.  
 - In case the content of a `main` field does not start with a heading, all content up to the first heading will be ignored.

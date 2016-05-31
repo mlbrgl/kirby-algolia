@@ -37,15 +37,35 @@ $settings = c::get('kirby-algolia');
 // Initializing Index and Parser
 $index = new \KirbyAlgolia\Index($settings);
 $parser = new \KirbyAlgolia\Parser($index, $settings['fields'], 'fragments');
+$count = 0;
 
 // Getting a collection of all pages in the site and processing
 // only those which content type we are interested in
 $pages = $site->index()->visible();
+
 foreach ($pages as $page) {
+
   if(in_array($page->template(), $settings['content']['types'])) {
+    $count ++;
     $parser->parse($page);
+
+    print $count . ' - ' . round(memory_get_usage()/1048576,2).' MB' . PHP_EOL;
+    
+    if(!($count % 50)){
+      print '## INDEXING ##' . PHP_EOL;
+      // Save current batch
+      $index->update('batch');
+    }
   }
 }
 
-// Save all records in one go
-$index->update('batch');
+// Indexing the last batch
+if(($count % 50)){
+  print '## INDEXING ##' . PHP_EOL;
+  // Save current batch
+  $index->update('batch');
+}
+
+
+
+

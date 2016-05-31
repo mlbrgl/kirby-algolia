@@ -8,7 +8,7 @@ class Fragment {
   
   private $_id;
   private $_heading;
-  public $_content;
+  private $_content;
   private $_importance;
   private $meta;
 
@@ -87,9 +87,7 @@ class Fragment {
     unset($this->_id);
     unset($this->_heading);
     unset($this->_importance);
-    // _content gets a special treatment as its content is being concatenated 
-    // TODO necessary ?
-    $this->_content = '';
+    unset($this->_content);
   }
 
   /*

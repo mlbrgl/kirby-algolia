@@ -80,7 +80,7 @@ class Parser {
             while ($line !== false) {
               
               // A new heading has been found, a new fragment can be prepared.
-              if(preg_match('/^(#+)\s(\S.+)$/', $line, $matches)) {
+              if(preg_match('/^(#+)\s+(.+)$/', $line, $matches)) {
                 $heading_count ++;
                 
                 // Saving the previous fragment as record first, ignoring the first

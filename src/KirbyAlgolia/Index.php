@@ -32,7 +32,7 @@ class Index {
   public function update($type, $options = NULL) {
     if(!empty($this->records)){
 
-      if(!$this->dry_run){        
+      if(!$this->dry_run){
       
         switch ($type) {
           case 'fragments':
@@ -46,10 +46,17 @@ class Index {
             break;
 
           case 'batch':
-            // The index is cleared as the batch indexing process is blind and does not
-            // keep track of what has been indexed or not. This is for the moment the only
-            // way to avoid creating duplicates in the index.
-            $this->index->clearIndex();
+            //
+            // The index is cleared as the batch indexing process is blind and
+            // does not keep track of what has been indexed or not. This is for
+            // the moment the only way to avoid creating duplicates in the
+            // index. Since the update function is called on every batch, we
+            // only want to clear the index once, before sending the first batch
+            static $index_cleared = FALSE;
+            if(!$index_cleared) {
+              $index_cleared = TRUE;
+              $this->index->clearIndex();
+            }
 
             break;
 
@@ -60,7 +67,8 @@ class Index {
         // Sending indexing query to Algolia
         $this->index->addObjects($this->records); 
       }
-      
+      // Resets the internal records array in preparation of the next call
+      unset($this->records);
     }
     
   }
@@ -89,7 +97,6 @@ class Index {
       $this->index->deleteByQuery($base_id, array('restrictSearchableAttributes' => '_id'));
     }
   }
-
 
 }
 

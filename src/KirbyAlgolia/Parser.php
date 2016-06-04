@@ -3,18 +3,18 @@
 /* 
 line
 line
---> headless fragment: discarding content between the beginning of the article
-and the first heading. The resulting complexity of handling this
-special case is not worth it at this stage.
+--> INDEXING (headless fragment)
 # heading
 line
---> sending off fragment
+--> INDEXING
 ## heading
+--> INDEXING (content-less heading)
+### subheading
 line
 line
---> sending off fragment
+--> INDEXING
 # unlikely heading
---> sending off fragment by code convenience but very little value
+--> INDEXING by code convenience but very little value
 */
 
 namespace KirbyAlgolia;
@@ -62,11 +62,11 @@ class Parser {
               $fragment->set_importance(0);
               $fragment->append_content($page->$boost_field()->value());
 
-              $fragment->preprocess();
-              $this->index->add(array($fragment->to_array()));
+              $this->index->add_fragment($fragment);
             }
           }
         }
+
 
         // Main fields
         foreach($this->fields['main'] as $main_field) {
@@ -75,6 +75,12 @@ class Parser {
           $heading_count = 0; 
           
           if(!$page->$main_field()->empty()) {
+            // Resetting fragment before processing main field
+            $fragment->reset();
+            // Init fragment ID in case the content starts with a headless fragment
+            $fragment->set_id(Fragment::get_base_id($page) 
+                             . '#' . $main_field);
+
             // Start breaking up the textarea line by line
             $line = strtok($page->$main_field(), PHP_EOL);
             while ($line !== false) {
@@ -83,34 +89,29 @@ class Parser {
               if(preg_match('/^(#+)\s+(.+)$/', $line, $matches)) {
                 $heading_count ++;
                 
-                // Saving the previous fragment as record first, ignoring the first
-                // match as it would either be a headless fragment or an empty one
-                if($heading_count > 1) {
-                  $fragment->preprocess();
-                  $this->index->add(array($fragment->to_array()));
-                }
-                
+                $this->index->add_fragment($fragment);
+                                
                 // Starting new heading based fragment
                 $fragment->reset();
                 $fragment->set_heading($matches[2]);
                 $fragment->set_id(Fragment::get_base_id($page) 
-                                       . '#' . \str::slug($matches[2]) 
-                                       . '--' . $main_field . $heading_count);
+                                 . '#' . $main_field 
+                                 . '--' . \str::slug($matches[2]) 
+                                 . '--' . $heading_count);
                 $fragment->set_importance(strlen($matches[1]));
               } else {
-                // During the first runs before finding a heading in the current
-                // main field, content from a potential headless fragment will be
-                // appended here and then discarded by the above fragment reset,
-                // without being used. TODO ? Do not append if heading empty?
                 $fragment->append_content($line);
               }
+              // NB: two PHP_EOL (i.e. two new lines) without a character or
+              // string between them will be considered as one by strtok().
+              // Effectively, this means that empty lines do not make it to the
+              // final content.
               $line = strtok(PHP_EOL);
             }
             
-            // Saving the last record (as saving only happens as a new heading
-            // is found)
-            $fragment->preprocess();
-            $this->index->add(array($fragment->to_array()));
+            // Saving the last fragment (as saving only happens as a new heading
+            // is found). This also takes care of heading-less articles.
+            $this->index->add_fragment($fragment);
           }
 
         }     

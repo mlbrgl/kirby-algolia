@@ -81,4 +81,13 @@ Each `fields` array is an array of field ids (defined in the site blueprints):
 ## Known limitations
 
 - Date fields are converted to timestamp (only format supported by Algolia for sorting) only if the date field is either called `date` or `datetime` and if it is listed in the `meta` fields.  
-- In case the content of a `main` field does not start with a heading, all content up to the first heading will be ignored.
+- ~~In case the content of a `main` field does not start with a heading, all content up to the first heading will be ignored.~~
+- Headings are only recognized as such when they start on the first character of the line (no leading spaces)
+
+## Memory usage
+738 articles, 7,688 fragments
+
+| Batches            | Top  memory usage |
+| ------------------ | ----------------- |
+| *none*             | 33.97 MB          |
+| 50 pages at a time | 21.1 MB           |

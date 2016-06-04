@@ -74,15 +74,22 @@ class Index {
   }
 
   /*
-   * Add records to the internal array for batch indexing.
+   * Add a fragment to the internal array for batch indexing.
    *
-   * The records will only be saved after a call to update().
+   * The resulting records will only be saved after a call to update().
    *
-   * @param      array  $records  The records
+   * @param      <type>  $fragment  The fragment
    */
-  public function add($records) {
-    foreach($records as $record) {
-      $this->records[] = $record; 
+  public function add_fragment($fragment) {
+    // Prepares fragment for exporting
+    $fragment->preprocess();
+
+    $content = $fragment->get_content();
+    $heading = $fragment->get_heading();
+
+	// We only want fragments which contain at least one of these two fields: content or heading
+    if(!empty($content) || !empty($heading)) {
+      $this->records[] = $fragment->to_array(); 
     }
   }
 

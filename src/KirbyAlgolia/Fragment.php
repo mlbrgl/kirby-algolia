@@ -62,22 +62,45 @@ class Fragment {
     $this->_content .= $value . PHP_EOL;
   }
 
+
   public function set_heading($value) {
     $this->_heading = $value;
   }
 
 
+  public function get_content() {
+    return $this->_content;
+  }
+
+
+  public function get_heading() {
+    return $this->_heading;
+  }
+
+  
   /*
-   * Run pre-process operations on a fragment
+   * Prepare fragment before exporting
    */
   public function preprocess() {
-    if(!empty($this->_content)) {
-      $this->_content = \html::decode(kirbytext($this->_content));
-    }
-    if(!empty($this->_heading)) {
-      $this->_heading = \html::decode(kirbytext($this->_heading));
-    }
+    // Decode kirby text and resulting html
+    $this->_preprocess_field('_content');
+    $this->_preprocess_field('_heading');
   }
+
+
+/**
+ * Pre-process field content
+ * 
+ * The field is expected to contain kirby text.
+ *
+ * @param      <type>  $field_name  The field name
+ */
+private function _preprocess_field($field_name) {
+  if(!empty($this->$field_name)) {
+    $this->$field_name = trim(\html::decode(kirbytext($this->$field_name)));
+    $a = 1;
+  }
+}
   
 
   /*
@@ -91,12 +114,15 @@ class Fragment {
   }
 
   /*
+   * Gets the base identifier.
    *
+   * @param      <type>  $page   The page
+   *
+   * @return     <type>  The base identifier.
    */
   public static function get_base_id($page) {
     return $page->id();
   }
- 
 
 
   public function to_array() {
@@ -114,14 +140,16 @@ class Fragment {
       $fragment['_content'] = $this->_content;
     }
 
-    // '_importance' gets assigned for boost fields, hence the different check
+    // '_importance' gets assigned 0 for boost fields, hence the different check
     if(isset($this->_importance)) {
       $fragment['_importance'] = $this->_importance;
     }
 
     if(!empty($this->meta)) {
       foreach($this->meta as $field => $value) {
-        $fragment[$field] = $value;
+        if(!empty($value)) {
+          $fragment[$field] = $value;
+        }
       }
     }
 

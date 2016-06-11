@@ -78,13 +78,14 @@ Each `fields` array is an array of field ids (defined in the site blueprints):
 3. Check your Algolia dashboard to see you indexed content.
 
 ## Changelog
-###< 1.0.0
+### < v1.0.0
 - Delete fragments before indexing new ones
 - Move settings to config file
 - Batch indexing
 - Config option to select the type of content that gets indexed
 - Delete, move, hide, show scenarios
-### 1.0.0
+
+### v1.0.0
 - Support for multiple blueprints with different fields configurations
 
 ## Known limitations

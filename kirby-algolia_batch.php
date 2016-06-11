@@ -36,7 +36,7 @@ $settings = c::get('kirby-algolia');
 
 // Initializing Index and Parser
 $index = new \KirbyAlgolia\Index($settings);
-$parser = new \KirbyAlgolia\Parser($index, $settings['fields'], 'fragments');
+$parser = new \KirbyAlgolia\Parser($index, 'fragments');
 $count = 0;
 
 // Getting a collection of all pages in the site and processing
@@ -45,9 +45,9 @@ $pages = $site->index()->visible();
 
 foreach ($pages as $page) {
 
-  if(in_array($page->template(), $settings['content']['types'])) {
+  if(array_key_exists($page->intendedTemplate(), $settings['blueprints'])) {
     $count ++;
-    $parser->parse($page);
+    $parser->parse($page, $settings['blueprints'][$page->intendedTemplate()]['fields']);
 
     print $count . ' - ' . round(memory_get_usage()/1048576,2).' MB' . PHP_EOL;
     

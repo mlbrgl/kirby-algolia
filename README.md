@@ -33,14 +33,22 @@ c::set('kirby-algolia', array(
     'application_id' => '[ALGOLIA_APP_ID]', // required
     'index' => '[ALGOLIA_INDEX_NAME]', // required
     'api_key' => '[ALGOLIA_API_KEY]' // required
-    ),
-  'fields', array(
-    'meta' => array('title', 'author'), // example, optional.
-    'boost' => array('teaser'), // example, optional
-    'main' => array('text') // example, required
   ),
-  'content' => array(
-    'types' => array('article') //example, required
+  'blueprints' => array( // example, at least one blueprint required
+    'article' => array(
+      'fields' => array(
+        'meta' => array('title', 'author'), // example, optional
+        'boost' => array('teaser'), // example, optional
+        'main' => array('text') // example, required
+      )
+    ),
+    'news' => array(
+      'fields' => array(
+        'meta' => array('title', 'datetime'), // example, optional
+        'boost' => array('teaser'), // example, optional
+        'main' => array('text') // example, required
+      )
+    )
   ),
   //'debug' => array('dry_run')
 ));
@@ -69,14 +77,15 @@ Each `fields` array is an array of field ids (defined in the site blueprints):
 2. Create a piece of content in Kirby's panel and click 'Save'.
 3. Check your Algolia dashboard to see you indexed content.
 
-## Roadmap
-
-- ~~Delete fragments before indexing new ones~~
-- ~~Move settings to config file~~
-- ~~Batch indexing~~
-- ~~Config option to select the type of content that gets indexed~~
-- ~~Delete, move, hide, show scenarios~~
-
+## Changelog
+###< 1.0.0
+- Delete fragments before indexing new ones
+- Move settings to config file
+- Batch indexing
+- Config option to select the type of content that gets indexed
+- Delete, move, hide, show scenarios
+### 1.0.0
+- Support for multiple blueprints with different fields configurations
 
 ## Known limitations
 

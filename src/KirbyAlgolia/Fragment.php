@@ -10,6 +10,7 @@ class Fragment {
   private $_heading;
   private $_content;
   private $_importance;
+  private $_blueprint;
   private $meta;
 
   public function __construct() {
@@ -42,7 +43,6 @@ class Fragment {
     $this->_id = $value;
   }
 
-
  
   /**
    * Sets the importance.
@@ -55,6 +55,16 @@ class Fragment {
    */
   public function set_importance($value) {
     $this->_importance = $value;
+  }
+
+
+  /**
+   * Sets the content type.
+   *
+   * @param      <type>  $value  The value
+   */
+  public function set_blueprint($value) {
+    $this->_blueprint = $value;
   }
 
 
@@ -104,7 +114,7 @@ private function _preprocess_field($field_name) {
   
 
   /*
-   * Resets fragment content while preserving meta fields
+   * Resets fragment content while preserving meta and blueprint fields
    */
   public function reset() {
     unset($this->_id);
@@ -143,6 +153,10 @@ private function _preprocess_field($field_name) {
     // '_importance' gets assigned 0 for boost fields, hence the different check
     if(isset($this->_importance)) {
       $fragment['_importance'] = $this->_importance;
+    }
+
+    if(!empty($this->_blueprint)) {
+      $fragment['_blueprint'] = $this->_blueprint;
     }
 
     if(!empty($this->meta)) {

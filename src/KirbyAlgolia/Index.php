@@ -26,10 +26,10 @@ class Index {
   /*
    * Updates records in the Algolia index by removing relevant records first.
    *
-   * @param      string  $type     'fragments'|'multiple'
-   * @param      <type>  $options  'base_id'
+   * @param      string  $type    'fragments'|'batch'
+   * @param      params  $params  The parameters
    */
-  public function update($type, $options = NULL) {
+  public function update($type, $params = NULL) {
     if(!empty($this->records)){
 
       if(!$this->dry_run){
@@ -39,8 +39,8 @@ class Index {
             // Before indexing new fragments, we need to remove all fragments of the same previously indexed content,
             // to prevent leaving ghost fragments in case a heading has been renamed. These fragments all share the 
             // same base id.
-            if(!empty($options['base_id'])) {
-              $this->delete_fragments($options['base_id']);
+            if(!empty($params['base_id'])) {
+              $this->delete_fragments($params['base_id']);
             }
             
             break;

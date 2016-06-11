@@ -22,19 +22,17 @@ namespace KirbyAlgolia;
 
 class Parser {
 
-  private $fields;
   private $parsing_type;
   private $index;
 
-  public function __construct($index, $fields, $parsing_type = 'fragments'){
+  public function __construct($index, $parsing_type = 'fragments'){
     $this->index = $index;
-    $this->fields = $fields;
     $this->parsing_type = $parsing_type; // whether to segment the content in fragments
     
     // TODO raise an exception if $fields['main'] empty
   }
 
-  public function parse($page) {
+  public function parse($page, $fields) {
     switch ($this->parsing_type) {
       case 'fragments':
         $fragment = new Fragment();
@@ -42,8 +40,8 @@ class Parser {
         // Meta fields are not being indexed separately but rather give context to the
         // main and boost fields. Since they do not change from fragment to fragment,
         // we set them once and for all.
-        if(!empty($this->fields['meta'])) {
-          foreach($this->fields['meta'] as $meta_field) {
+        if(!empty($fields['meta'])) {
+          foreach($fields['meta'] as $meta_field) {
             // ATTENTION: VERY DIRTY HARDCODED TEMPORARY PREPROCESSING AROUND
             // PRESUPPOSED DATE FIELDS
             if($meta_field == 'datetime' || $meta_field == 'date') {
@@ -54,9 +52,12 @@ class Parser {
           }
         }
 
+        // The blueprint is the same for all fragments of the current article
+        $fragment->set_blueprint($page->intendedTemplate());
+        
         // Boost fields
-        if(!empty($this->fields['boost'])) {
-          foreach($this->fields['boost'] as $boost_field) {
+        if(!empty($fields['boost'])) {
+          foreach($fields['boost'] as $boost_field) {
             if(!empty($page->$boost_field()->value())) {
               $fragment->set_id(Fragment::get_base_id($page) . '#' . $boost_field);
               $fragment->set_importance(0);
@@ -69,7 +70,7 @@ class Parser {
 
 
         // Main fields
-        foreach($this->fields['main'] as $main_field) {
+        foreach($fields['main'] as $main_field) {
           // heading_count is being used to uniquely identify a heading in the 
           // content
           $heading_count = 0; 

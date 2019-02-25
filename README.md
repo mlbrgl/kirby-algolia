@@ -95,9 +95,14 @@ Each `fields` array is an array of field ids (defined in the site blueprints):
 - Headings are only recognized as such when they start on the first character of the line (no leading spaces)
 
 ## Memory usage
+
 738 articles, 7,688 fragments
 
 | Batches            | Top  memory usage |
 | ------------------ | ----------------- |
 | *none*             | 33.97 MB          |
 | 50 pages at a time | 21.1 MB           |
+
+## Unlicence
+
+This work is unlicenced along the the terms of <https://unlicense.org/>.

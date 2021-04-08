@@ -5,15 +5,12 @@ namespace KirbyAlgolia;
 class Fragment
 {
   private $_id;
+  private $_base_id;
   private $_heading;
   private $_content;
   private $_importance;
   private $_blueprint;
   private $meta;
-
-  public function __construct()
-  {
-  }
 
   /**
    * Sets the meta fields.
@@ -38,7 +35,7 @@ class Fragment
    */
   public function set_id($value)
   {
-    $this->_id = $value;
+    $this->_id = $this->_base_id . "#" . $value;
   }
 
   /**
@@ -105,8 +102,9 @@ class Fragment
   private function _preprocess_field($field_name)
   {
     if (!empty($this->$field_name)) {
-      $this->$field_name = trim(\html::decode(kirbytext($this->$field_name)));
-      $a = 1;
+      $this->$field_name = trim(
+        \Kirby\Toolkit\Html::decode(kirbytext($this->$field_name))
+      );
     }
   }
 
@@ -115,22 +113,21 @@ class Fragment
    */
   public function reset()
   {
-    unset($this->_id);
-    unset($this->_heading);
-    unset($this->_importance);
-    unset($this->_content);
+    $this->_id = null;
+    $this->_heading = null;
+    $this->_importance = null;
+    $this->_content = "";
   }
 
   /*
-   * Gets the base identifier.
+   * Sets the base identifier.
    *
    * @param      <type>  $page   The page
    *
-   * @return     <type>  The base identifier.
    */
-  public static function get_base_id($page)
+  public function set_base_id($id)
   {
-    return $page->id();
+    $this->_base_id = $id;
   }
 
   public function to_array()

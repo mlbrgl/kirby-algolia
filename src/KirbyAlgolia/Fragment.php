@@ -1,11 +1,9 @@
 <?php
 
-
-
 namespace KirbyAlgolia;
 
-class Fragment {
-  
+class Fragment
+{
   private $_id;
   private $_heading;
   private $_content;
@@ -13,10 +11,9 @@ class Fragment {
   private $_blueprint;
   private $meta;
 
-  public function __construct() {
-        
+  public function __construct()
+  {
   }
-
 
   /**
    * Sets the meta fields.
@@ -27,10 +24,10 @@ class Fragment {
    * @param      string  $field_name  The field name
    * @param      string  $value       The value
    */
-  public function set_meta($field_name, $value) {
+  public function set_meta($field_name, $value)
+  {
     $this->meta[$field_name] = $value;
   }
-
 
   /**
    * Sets the fragment identifier.
@@ -39,11 +36,11 @@ class Fragment {
    *
    * @param      string  $value  The value
    */
-  public function set_id($value) {
+  public function set_id($value)
+  {
     $this->_id = $value;
   }
 
- 
   /**
    * Sets the importance.
    *
@@ -53,70 +50,71 @@ class Fragment {
    *
    * @param      integer  $value  The value
    */
-  public function set_importance($value) {
+  public function set_importance($value)
+  {
     $this->_importance = $value;
   }
-
 
   /**
    * Sets the content type.
    *
    * @param      <type>  $value  The value
    */
-  public function set_blueprint($value) {
+  public function set_blueprint($value)
+  {
     $this->_blueprint = $value;
   }
 
-
-  public function append_content($value) {
+  public function append_content($value)
+  {
     $this->_content .= $value . PHP_EOL;
   }
 
-
-  public function set_heading($value) {
+  public function set_heading($value)
+  {
     $this->_heading = $value;
   }
 
-
-  public function get_content() {
+  public function get_content()
+  {
     return $this->_content;
   }
 
-
-  public function get_heading() {
+  public function get_heading()
+  {
     return $this->_heading;
   }
 
-  
   /*
    * Prepare fragment before exporting
    */
-  public function preprocess() {
+  public function preprocess()
+  {
     // Decode kirby text and resulting html
-    $this->_preprocess_field('_content');
-    $this->_preprocess_field('_heading');
+    $this->_preprocess_field("_content");
+    $this->_preprocess_field("_heading");
   }
 
-
-/**
- * Pre-process field content
- * 
- * The field is expected to contain kirby text.
- *
- * @param      <type>  $field_name  The field name
- */
-private function _preprocess_field($field_name) {
-  if(!empty($this->$field_name)) {
-    $this->$field_name = trim(\html::decode(kirbytext($this->$field_name)));
-    $a = 1;
+  /**
+   * Pre-process field content
+   *
+   * The field is expected to contain kirby text.
+   *
+   * @param      <type>  $field_name  The field name
+   */
+  private function _preprocess_field($field_name)
+  {
+    if (!empty($this->$field_name)) {
+      $this->$field_name = trim(\html::decode(kirbytext($this->$field_name)));
+      $a = 1;
+    }
   }
-}
-  
 
   /*
    * Resets fragment content while preserving meta and blueprint fields
    */
-  public function reset() {
+  public function reset()
+  {
     unset($this->_id);
     unset($this->_heading);
     unset($this->_importance);
@@ -130,38 +128,39 @@ private function _preprocess_field($field_name) {
    *
    * @return     <type>  The base identifier.
    */
-  public static function get_base_id($page) {
+  public static function get_base_id($page)
+  {
     return $page->id();
   }
 
+  public function to_array()
+  {
+    $fragment = [];
 
-  public function to_array() {
-    $fragment = array();
-
-    if(!empty($this->_id)) {
-      $fragment['_id'] = $this->_id;
+    if (!empty($this->_id)) {
+      $fragment["_id"] = $this->_id;
     }
 
-    if(!empty($this->_heading)) {
-      $fragment['_heading'] = $this->_heading;
+    if (!empty($this->_heading)) {
+      $fragment["_heading"] = $this->_heading;
     }
 
-    if(!empty($this->_content)) {
-      $fragment['_content'] = $this->_content;
+    if (!empty($this->_content)) {
+      $fragment["_content"] = $this->_content;
     }
 
     // '_importance' gets assigned 0 for boost fields, hence the different check
-    if(isset($this->_importance)) {
-      $fragment['_importance'] = $this->_importance;
+    if (isset($this->_importance)) {
+      $fragment["_importance"] = $this->_importance;
     }
 
-    if(!empty($this->_blueprint)) {
-      $fragment['_blueprint'] = $this->_blueprint;
+    if (!empty($this->_blueprint)) {
+      $fragment["_blueprint"] = $this->_blueprint;
     }
 
-    if(!empty($this->meta)) {
-      foreach($this->meta as $field => $value) {
-        if(!empty($value)) {
+    if (!empty($this->meta)) {
+      foreach ($this->meta as $field => $value) {
+        if (!empty($value)) {
           $fragment[$field] = $value;
         }
       }
@@ -169,7 +168,4 @@ private function _preprocess_field($field_name) {
 
     return $fragment;
   }
-
-
-
 }

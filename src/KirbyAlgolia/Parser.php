@@ -35,7 +35,7 @@ class Parser
     $blueprint = $page->intendedTemplate()->name();
     $fields = $this->settings["fields"][$blueprint];
     $fragment = new Fragment();
-    $fragment->set_base_id($page->id());
+    $fragment->set_page_id($page->id());
 
     // Meta fields are not being indexed separately but rather give context to the
     // main and boost fields. Since they do not change from fragment to fragment,

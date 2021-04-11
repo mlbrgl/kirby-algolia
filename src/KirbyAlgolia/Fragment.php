@@ -5,7 +5,7 @@ namespace KirbyAlgolia;
 class Fragment
 {
   private $_id;
-  private $_base_id;
+  private $_page_id;
   private $_heading;
   private $_content;
   private $_importance;
@@ -35,7 +35,7 @@ class Fragment
    */
   public function set_id($value)
   {
-    $this->_id = $this->_base_id . "#" . $value;
+    $this->_id = $this->_page_id . "#" . $value;
   }
 
   /**
@@ -125,9 +125,9 @@ class Fragment
    * @param      <type>  $page   The page
    *
    */
-  public function set_base_id($id)
+  public function set_page_id($id)
   {
-    $this->_base_id = $id;
+    $this->_page_id = $id;
   }
 
   public function to_array()

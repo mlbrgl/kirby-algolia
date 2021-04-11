@@ -31,6 +31,7 @@ class Parser
 
   public function parse($page)
   {
+    $this->fragments = []; // reset internal array if parse() already called on this Parser instance
     $blueprint = $page->intendedTemplate()->name();
     $fields = $this->settings["fields"][$blueprint];
     $fragment = new Fragment();

@@ -74,8 +74,11 @@ class Parser
       $heading_count = 0;
 
       if (!$page->$main_field()->isEmpty()) {
-        // Init fragment ID in case the content starts with a headless fragment
+        // Initialisation for a possible headless fragment. If none are found, the
+        // next add_fragment() will try adding an empty fragment (which does
+        // nothing).
         $fragment->set_id($main_field);
+        $fragment->set_importance(1);
 
         // Start breaking up the textarea line by line
         $line = strtok($page->$main_field(), PHP_EOL);

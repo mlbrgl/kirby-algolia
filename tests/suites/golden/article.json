@@ -1,0 +1,50 @@
+[
+  {
+    "_id": "article#teaser",
+    "_content": "Il n'existe pas actuellement de traitement efficace connu contre le SARS-CoV-2.",
+    "_importance": 0,
+    "_blueprint": "article",
+    "title": "Quelle lutte contre la Covid-19 ?",
+    "datetime": 1595146800,
+    "author": "Jean-Loup Rey, m\u00e9decin, sant\u00e9 publique"
+  },
+  {
+    "_id": "article#text--prevention--1",
+    "_heading": "Pr\u00e9vention",
+    "_content": "Une seule m\u00e9thode a \u00e9t\u00e9 \u00e9valu\u00e9e et\/ou mod\u00e9lis\u00e9e, c\u2019est la distanciation.\nA partir de ce constat, il est possible :\n\nsoit de d\u00e9pister les cas contagieux et les isoler, avec recherche, test et mise en quarantaine  des cas contacts\nsoit de confiner tout le monde.",
+    "_importance": 2,
+    "_blueprint": "article",
+    "title": "Quelle lutte contre la Covid-19 ?",
+    "datetime": 1595146800,
+    "author": "Jean-Loup Rey, m\u00e9decin, sant\u00e9 publique"
+  },
+  {
+    "_id": "article#text--le-depistage--2",
+    "_heading": "Le d\u00e9pistage",
+    "_content": "Pour d\u00e9pister, il faut disposer d\u2019un examen biologique qui affirme que le sujet est porteur du  virus dans son organisme.",
+    "_importance": 3,
+    "_blueprint": "article",
+    "title": "Quelle lutte contre la Covid-19 ?",
+    "datetime": 1595146800,
+    "author": "Jean-Loup Rey, m\u00e9decin, sant\u00e9 publique"
+  },
+  {
+    "_id": "article#text--heading--3",
+    "_heading": "Heading...",
+    "_importance": 2,
+    "_blueprint": "article",
+    "title": "Quelle lutte contre la Covid-19 ?",
+    "datetime": 1595146800,
+    "author": "Jean-Loup Rey, m\u00e9decin, sant\u00e9 publique"
+  },
+  {
+    "_id": "article#text--immediately-followed-by-another-one--4",
+    "_heading": "... immediately followed by another one",
+    "_content": "Text under the heading.",
+    "_importance": 3,
+    "_blueprint": "article",
+    "title": "Quelle lutte contre la Covid-19 ?",
+    "datetime": 1595146800,
+    "author": "Jean-Loup Rey, m\u00e9decin, sant\u00e9 publique"
+  }
+]

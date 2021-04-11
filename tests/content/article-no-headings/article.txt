@@ -1,0 +1,25 @@
+Title: Quelle lutte contre la Covid-19 ?
+
+----
+
+Author: Jean-Loup Rey, médecin, santé publique
+
+----
+
+Datetime: 2020-07-19 08:20:00
+
+----
+
+Teaser: Il n'existe pas actuellement de traitement efficace connu contre le SARS-CoV-2.
+
+----
+
+Text:
+
+Une seule méthode a été évaluée et/ou modélisée, c’est la **distanciation**.
+
+A partir de ce constat, il est possible :
+- soit de dépister les cas contagieux et les isoler, avec recherche, test et mise en quarantaine  des cas contacts
+- soit de confiner tout le monde.
+
+Pour dépister, il faut disposer d’un examen biologique qui affirme que le sujet est porteur du  virus dans son organisme.

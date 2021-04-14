@@ -1,9 +1,12 @@
 {
+    "name": "mlbrgl/kirby-algolia",
+    "description": "Fragment-indexing content to Algolia.",
     "scripts": {
         "test": "phpunit --bootstrap ./tests/bootstrap.php --testdox tests/suites"
     },
     "require": {
-        "algolia/algoliasearch-client-php": "^1.9"
+        "php": ">=7.3",
+        "algolia/algoliasearch-client-php": "^2.7"
     },
     "autoload": {
         "psr-4": {

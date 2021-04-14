@@ -105,4 +105,4 @@ Each `fields` array is an array of field ids (defined in the site blueprints):
 
 ## Unlicence
 
-This work is unlicenced along the the terms of <https://unlicense.org/>.
+This work is unlicenced along the terms of <https://unlicense.org/>.

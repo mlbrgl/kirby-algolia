@@ -34,26 +34,25 @@ class Parser
     $this->fragments = []; // reset internal array if parse() already called on this Parser instance
     $blueprint = $page->intendedTemplate()->name();
     $fields = $this->settings["fields"][$blueprint];
+
     $fragment = new Fragment();
     $fragment->set_page_id($page->id());
+    $fragment->set_blueprint($blueprint);
 
     // Meta fields are not being indexed separately but rather give context to the
     // main and boost fields. Since they do not change from fragment to fragment,
     // we set them once and for all.
     if (!empty($fields["meta"])) {
       foreach ($fields["meta"] as $meta_field) {
-        // ATTENTION: VERY DIRTY HARDCODED TEMPORARY PREPROCESSING AROUND
+        // ATTENTION: VERY DIRTY HARDCODED PREPROCESSING AROUND
         // PRESUPPOSED DATE FIELDS
-        if ($meta_field == "datetime" || $meta_field == "date") {
+        if ($meta_field == Fragment::DATETIME || $meta_field == "date") {
           $fragment->set_meta($meta_field, $page->$meta_field()->toDate());
         } else {
           $fragment->set_meta($meta_field, $page->$meta_field()->value());
         }
       }
     }
-
-    // The blueprint is the same for all fragments of the current article
-    $fragment->set_blueprint($blueprint);
 
     // Boost fields
     if (!empty($fields["boost"])) {

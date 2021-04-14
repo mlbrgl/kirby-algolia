@@ -10,7 +10,14 @@ class Fragment
   private $_content;
   private $_importance;
   private $_blueprint;
-  private $meta;
+  private $_meta;
+
+  public const PAGE_ID = "page_id";
+  public const HEADING = "heading";
+  public const CONTENT = "content";
+  public const IMPORTANCE = "importance";
+  public const BLUEPRINT = "blueprint";
+  public const DATETIME = "datetime";
 
   /**
    * Sets the meta fields.
@@ -23,7 +30,7 @@ class Fragment
    */
   public function set_meta($field_name, $value)
   {
-    $this->meta[$field_name] = $value;
+    $this->_meta[$field_name] = $value;
   }
 
   /**
@@ -88,8 +95,9 @@ class Fragment
   public function preprocess()
   {
     // Decode kirby text and resulting html
-    $this->_preprocess_field("_content");
-    $this->_preprocess_field("_heading");
+    // TODO loop here and return preprocess value
+    $this->_preprocess_field($this->_content);
+    $this->_preprocess_field($this->_heading);
   }
 
   /**
@@ -125,9 +133,9 @@ class Fragment
    * @param      <type>  $page   The page
    *
    */
-  public function set_page_id($id)
+  public function set_page_id($page_id)
   {
-    $this->_page_id = $id;
+    $this->_page_id = $page_id;
   }
 
   public function to_array()
@@ -135,28 +143,32 @@ class Fragment
     $fragment = [];
 
     if (!empty($this->_id)) {
-      $fragment["_id"] = $this->_id;
+      $fragment["objectID"] = $this->_id;
+    }
+
+    if (!empty($this->_page_id)) {
+      $fragment[self::PAGE_ID] = $this->_page_id;
     }
 
     if (!empty($this->_heading)) {
-      $fragment["_heading"] = $this->_heading;
+      $fragment[self::HEADING] = $this->_heading;
     }
 
     if (!empty($this->_content)) {
-      $fragment["_content"] = $this->_content;
+      $fragment[self::CONTENT] = $this->_content;
     }
 
     // '_importance' gets assigned 0 for boost fields, hence the different check
     if (isset($this->_importance)) {
-      $fragment["_importance"] = $this->_importance;
+      $fragment[self::IMPORTANCE] = $this->_importance;
     }
 
     if (!empty($this->_blueprint)) {
-      $fragment["_blueprint"] = $this->_blueprint;
+      $fragment[self::BLUEPRINT] = $this->_blueprint;
     }
 
-    if (!empty($this->meta)) {
-      foreach ($this->meta as $field => $value) {
+    if (!empty($this->_meta)) {
+      foreach ($this->_meta as $field => $value) {
         if (!empty($value)) {
           $fragment[$field] = $value;
         }

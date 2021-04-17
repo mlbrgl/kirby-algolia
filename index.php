@@ -12,12 +12,6 @@ function is_page_indexable($page, $settings)
   ) && $page->isListed();
 }
 
-$hook_create_page = function ($page) use ($settings) {
-  if (is_page_indexable($page, $settings)) {
-    kirby_algolia_create_update_page($page, $settings);
-  }
-};
-
 $hook_update_page = function ($newPage, $oldPage) use ($settings) {
   if (is_page_indexable($oldPage, $settings)) {
     kirby_algolia_delete_page($oldPage, $settings);
@@ -27,7 +21,7 @@ $hook_update_page = function ($newPage, $oldPage) use ($settings) {
   }
 };
 
-$hook_delete_page = function ($staus, $page) use ($settings) {
+$hook_delete_page = function ($status, $page) use ($settings) {
   if (is_page_indexable($page, $settings)) {
     kirby_algolia_delete_page($page, $settings);
   }
@@ -35,7 +29,6 @@ $hook_delete_page = function ($staus, $page) use ($settings) {
 
 \Kirby::plugin("mlbrgl/kirby-algolia", [
   "hooks" => [
-    "page.create:after" => $hook_create_page,
     "page.update:after" => $hook_update_page,
     "page.changeTitle:after" => $hook_update_page,
     "page.changeStatus:after" => $hook_update_page,
@@ -44,6 +37,7 @@ $hook_delete_page = function ($staus, $page) use ($settings) {
     //"page.changeNum:after" => TODO
     //"page.duplicate:after" => TODO
     "page.delete:after" => $hook_delete_page,
+    // "page.create:after" => not necessary, pages are created as drafts
   ],
 ]);
 

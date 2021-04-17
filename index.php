@@ -33,11 +33,11 @@ $hook_delete_page = function ($status, $page) use ($settings) {
     "page.changeTitle:after" => $hook_update_page,
     "page.changeStatus:after" => $hook_update_page,
     "page.changeSlug:after" => $hook_update_page,
-    //"page.changeTemplate:after" => TODO
-    //"page.changeNum:after" => TODO
-    //"page.duplicate:after" => TODO
+    "page.changeTemplate:after" => $hook_update_page,
     "page.delete:after" => $hook_delete_page,
     // "page.create:after" => not necessary, pages are created as drafts
+    // "page.duplicate:after" => not necessary, pages are duplicated as drafts
+    // "page.changeNum:after" => not necessary, does not affect indexed data
   ],
 ]);
 

@@ -1,18 +1,20 @@
 [
   {
-    "_id": "article-no-headings#teaser",
-    "_content": "Il n'existe pas actuellement de traitement efficace connu contre le SARS-CoV-2.",
-    "_importance": 0,
-    "_blueprint": "article",
+    "objectID": "article-no-headings#teaser",
+    "page_id": "article-no-headings",
+    "content": "Il n'existe pas actuellement de traitement efficace connu contre le SARS-CoV-2.",
+    "importance": 0,
+    "blueprint": "article",
     "title": "Quelle lutte contre la Covid-19 ?",
     "datetime": 1595146800,
     "author": "Jean-Loup Rey, m\u00e9decin, sant\u00e9 publique"
   },
   {
-    "_id": "article-no-headings#text",
-    "_content": "Une seule m\u00e9thode a \u00e9t\u00e9 \u00e9valu\u00e9e et\/ou mod\u00e9lis\u00e9e, c\u2019est la distanciation.\nA partir de ce constat, il est possible :\n\nsoit de d\u00e9pister les cas contagieux et les isoler, avec recherche, test et mise en quarantaine  des cas contacts\nsoit de confiner tout le monde.\nPour d\u00e9pister, il faut disposer d\u2019un examen biologique qui affirme que le sujet est porteur du  virus dans son organisme.",
-    "_importance": 1,
-    "_blueprint": "article",
+    "objectID": "article-no-headings#text",
+    "page_id": "article-no-headings",
+    "content": "Une seule m\u00e9thode a \u00e9t\u00e9 \u00e9valu\u00e9e et\/ou mod\u00e9lis\u00e9e, c\u2019est la distanciation.\nA partir de ce constat, il est possible :\n\nsoit de d\u00e9pister les cas contagieux et les isoler, avec recherche, test et mise en quarantaine  des cas contacts\nsoit de confiner tout le monde.\nPour d\u00e9pister, il faut disposer d\u2019un examen biologique qui affirme que le sujet est porteur du  virus dans son organisme.",
+    "importance": 1,
+    "blueprint": "article",
     "title": "Quelle lutte contre la Covid-19 ?",
     "datetime": 1595146800,
     "author": "Jean-Loup Rey, m\u00e9decin, sant\u00e9 publique"

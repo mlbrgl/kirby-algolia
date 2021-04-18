@@ -94,26 +94,13 @@ class Fragment
    */
   public function preprocess()
   {
-    // Decode kirby text and resulting html
-    // TODO loop here and return preprocess value
-    $this->_preprocess_field($this->_content);
-    $this->_preprocess_field($this->_heading);
+    $this->_content = self::kirby_to_raw_text($this->_content);
+    $this->_heading = self::kirby_to_raw_text($this->_heading);
   }
 
-  /**
-   * Pre-process field content
-   *
-   * The field is expected to contain kirby text.
-   *
-   * @param      <type>  $field_name  The field name
-   */
-  private function _preprocess_field($field_name)
+  public static function kirby_to_raw_text($kirbytext)
   {
-    if (!empty($this->$field_name)) {
-      $this->$field_name = trim(
-        \Kirby\Toolkit\Html::decode(kirbytext($this->$field_name))
-      );
-    }
+    return trim(\Kirby\Toolkit\Html::decode(kirbytext($kirbytext)));
   }
 
   /*

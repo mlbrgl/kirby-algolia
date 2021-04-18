@@ -1,71 +1,58 @@
 <?php
 
-require __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . "/../../../kirby/bootstrap.php";
+use KirbyAlgolia\Index;
+use KirbyAlgolia\Parser;
 
+$debug = true;
 
-// Bootstrapping Kirby (from index.php)
-define('DS', DIRECTORY_SEPARATOR);
+$kirby = new Kirby([]);
 
-// load kirby
-require('..' . DS . '..' . DS . '..' . DS . 'kirby' . DS . 'bootstrap.php');
+define("BATCH_SIZE", 50);
 
-// check for a custom site.php
-if(file_exists('..' . DS . '..' . DS . '..' . DS . 'site.php')) {
-  require('..' . DS . '..' . DS . '..' . DS . 'site.php');
-} else {
-  $kirby = kirby();
-}
-
-// Lighter version of $kirby->lauch() as we are only interested in
-// bootstrapping kirby here, not rendering a page
-
-// set the timezone for all date functions
-date_default_timezone_set($kirby->options['timezone']);
-// this will trigger the configuration
-$site = $kirby->site();
-// load all extensions
-$kirby->extensions();
-// load all plugins
-$kirby->plugins();
-// load all models
-$kirby->models();
-
-
-// Getting Algolia configuration
-$settings = c::get('kirby-algolia');
-
-// Initializing Index and Parser
-$index = new \KirbyAlgolia\Index($settings);
-$parser = new \KirbyAlgolia\Parser($index, 'fragments');
+$settings = option("mlbrgl.kirby-algolia");
+$index = new Index($settings);
+$parser = new Parser($settings);
+$fragments = [];
 $count = 0;
 
-// Getting a collection of all pages in the site and processing
-// only those which content type we are interested in
-$pages = $site->index()->visible();
+$pages = site()->index();
+
+$time_start = microtime(true);
 
 foreach ($pages as $page) {
+  if (!Index::is_page_indexable($page, $settings)) {
+    continue;
+  }
+  $count++;
 
-  if(array_key_exists($page->intendedTemplate(), $settings['blueprints'])) {
-    $count ++;
-    $parser->parse($page, $settings['blueprints'][$page->intendedTemplate()]['fields']);
+  $fragments = array_merge($fragments, $parser->parse($page));
+  if ($debug) {
+    print $count .
+      " - " .
+      $page->title() .
+      " - " .
+      get_formatted_memory_usage() .
+      PHP_EOL;
+  }
 
-    print $count . ' - ' . round(memory_get_usage()/1048576,2).' MB' . PHP_EOL;
-    
-    if(!($count % 50)){
-      print '## INDEXING ##' . PHP_EOL;
-      // Save current batch
-      $index->update('batch');
-    }
+  if (!($count % BATCH_SIZE)) {
+    $index->send_fragments_algolia($fragments);
+    $fragments = [];
   }
 }
 
-// Indexing the last batch
-if(($count % 50)){
-  print '## INDEXING ##' . PHP_EOL;
-  // Save current batch
-  $index->update('batch');
+$time_end = microtime(true);
+
+// Send last batch to Algolia;
+if ($count % BATCH_SIZE) {
+  $index->send_fragments_algolia($fragments);
 }
 
+print "Parsed {$count} pages in " . $time_end - $time_start . " s" . PHP_EOL;
+print "Memory usage: " . get_formatted_memory_usage();
 
-
-
+function get_formatted_memory_usage()
+{
+  return round(memory_get_usage() / 1048576, 2) . " MB";
+}

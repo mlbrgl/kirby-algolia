@@ -46,7 +46,7 @@ function kirby_algolia_create_update_page($page, $settings)
   $parser = new \KirbyAlgolia\Parser($settings);
 
   $fragments = $parser->parse($page);
-  $index->create_update_fragments($page->id(), $fragments);
+  $index->send_fragments_algolia($fragments);
 }
 
 /**
@@ -59,7 +59,7 @@ function kirby_algolia_delete_page($page, $settings)
 {
   $index = new \KirbyAlgolia\Index($settings);
 
-  $index->delete_fragments($page->id());
+  $index->delete_fragments_algolia($page->id());
 }
 
 ?>

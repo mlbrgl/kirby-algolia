@@ -17,6 +17,11 @@ $fragments = [];
 $page_count = $fragment_count = 0;
 
 $pages = site()->index();
+// $pages = site()
+//   ->index()
+//   ->filterBy("template", "article")
+//   ->listed()
+//   ->limit(2);
 
 $time_start = microtime(true);
 

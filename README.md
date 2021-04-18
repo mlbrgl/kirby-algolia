@@ -77,17 +77,6 @@ Each `fields` array is an array of field ids (defined in the site blueprints):
 2. Create a piece of content in Kirby's panel and click 'Save'.
 3. Check your Algolia dashboard to see you indexed content.
 
-## Changelog
-### < v1.0.0
-- Delete fragments before indexing new ones
-- Move settings to config file
-- Batch indexing
-- Config option to select the type of content that gets indexed
-- Delete, move, hide, show scenarios
-
-### v1.0.0
-- Support for multiple blueprints with different fields configurations
-
 ## Known limitations
 
 - Date fields are converted to timestamp (only format supported by Algolia for sorting) only if the date field is either called `date` or `datetime` and if it is listed in the `meta` fields.  

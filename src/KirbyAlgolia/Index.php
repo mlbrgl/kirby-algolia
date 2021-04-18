@@ -24,6 +24,14 @@ class Index
     $this->algolia_index = $client->initIndex($settings["algolia"]["index"]);
   }
 
+  public static function is_page_indexable($page, $settings)
+  {
+    return array_key_exists(
+      $page->intendedTemplate()->name(),
+      $settings["fields"]
+    ) && $page->isListed();
+  }
+
   /*
    * Updates records in the Algolia index by removing relevant records first.
    */

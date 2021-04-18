@@ -1,28 +1,21 @@
 <?php
 
 require __DIR__ . "/vendor/autoload.php";
+use KirbyAlgolia\Index;
 
 $settings = option("mlbrgl.kirby-algolia");
 
-function is_page_indexable($page, $settings)
-{
-  return array_key_exists(
-    $page->intendedTemplate()->name(),
-    $settings["fields"]
-  ) && $page->isListed();
-}
-
 $hook_update_page = function ($newPage, $oldPage) use ($settings) {
-  if (is_page_indexable($oldPage, $settings)) {
+  if (Index::is_page_indexable($oldPage, $settings)) {
     kirby_algolia_delete_page($oldPage, $settings);
   }
-  if (is_page_indexable($newPage, $settings)) {
+  if (Index::is_page_indexable($newPage, $settings)) {
     kirby_algolia_create_update_page($newPage, $settings);
   }
 };
 
 $hook_delete_page = function ($status, $page) use ($settings) {
-  if (is_page_indexable($page, $settings)) {
+  if (Index::is_page_indexable($page, $settings)) {
     kirby_algolia_delete_page($page, $settings);
   }
 };
@@ -52,10 +45,7 @@ function kirby_algolia_create_update_page($page, $settings)
   $index = new \KirbyAlgolia\Index($settings);
   $parser = new \KirbyAlgolia\Parser($settings);
 
-  $fragments = $parser->parse(
-    $page,
-    $settings["fields"][$page->intendedTemplate()->name()]
-  );
+  $fragments = $parser->parse($page);
   $index->create_update_fragments($page->id(), $fragments);
 }
 

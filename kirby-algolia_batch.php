@@ -4,7 +4,7 @@ require_once __DIR__ . "/../../../kirby/bootstrap.php";
 use KirbyAlgolia\Index;
 use KirbyAlgolia\Parser;
 
-$debug = true;
+$debug = false;
 
 $kirby = new Kirby([]);
 
@@ -14,7 +14,7 @@ $settings = option("mlbrgl.kirby-algolia");
 $index = new Index($settings);
 $parser = new Parser($settings);
 $fragments = [];
-$count = 0;
+$page_count = $fragment_count = 0;
 
 $pages = site()->index();
 
@@ -24,11 +24,11 @@ foreach ($pages as $page) {
   if (!Index::is_page_indexable($page, $settings)) {
     continue;
   }
-  $count++;
+  $page_count++;
 
   $fragments = array_merge($fragments, $parser->parse($page));
   if ($debug) {
-    print $count .
+    print $page_count .
       " - " .
       $page->title() .
       " - " .
@@ -36,8 +36,9 @@ foreach ($pages as $page) {
       PHP_EOL;
   }
 
-  if (!($count % BATCH_SIZE)) {
+  if (!($page_count % BATCH_SIZE)) {
     $index->send_fragments_algolia($fragments);
+    $fragment_count += count($fragments);
     $fragments = [];
   }
 }
@@ -45,11 +46,16 @@ foreach ($pages as $page) {
 $time_end = microtime(true);
 
 // Send last batch to Algolia;
-if ($count % BATCH_SIZE) {
+if ($page_count % BATCH_SIZE) {
   $index->send_fragments_algolia($fragments);
+  $fragment_count += count($fragments);
 }
 
-print "Parsed {$count} pages in " . $time_end - $time_start . " s" . PHP_EOL;
+print "Parsed {$page_count} pages ({$fragment_count} fragments) in " .
+  $time_end -
+  $time_start .
+  " s" .
+  PHP_EOL;
 print "Memory usage: " . get_formatted_memory_usage();
 
 function get_formatted_memory_usage()

@@ -83,6 +83,12 @@ Each `fields` array is an array of field ids (defined in the site blueprints):
 - ~~In case the content of a `main` field does not start with a heading, all content up to the first heading will be ignored.~~
 - Headings are only recognized as such when they start on the first character of the line (no leading spaces)
 
+## Testing
+
+Run tests with `composer test`.
+
+Tests inherit the configuration from the parent site. This can be overriden in `bootstrap.php`.
+
 ## Memory usage
 
 738 articles, 7,688 fragments

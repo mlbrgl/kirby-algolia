@@ -1,6 +1,6 @@
 # Kirby / Algolia integration
 
-This is a [Kirby](https://getkirby.com) plugin which enables sending content to [Algolia](https://www.algolia.com/) for indexing.
+This is a [Kirby](https://getkirby.com) plugin which enables incrementally sending new or updated content to [Algolia](https://www.algolia.com/) for indexing. Supports batch indexing all content through a CLI script.
 
 The default indexing method is inspired by the rationale behind [DocSearch](https://community.algolia.com/docsearch/), featured in this [blog post](https://blog.algolia.com/how-to-build-a-helpful-search-for-technical-documentation-the-laravel-example). It will be referred as _fragment indexing_ in this readme and in the code.
 
@@ -15,6 +15,10 @@ Algolia already gives access to that metric used in their tie-break algorithm. T
 1. Go through the [setup](#Setup).
 2. Create a piece of content in Kirby's panel and click 'Save'.
 3. Check your Algolia dashboard to see your indexed content.
+
+## Batch indexing
+
+Run `php path/to/batch-index.php` from either the site root or the plugin folder. Uses the same [configuration options](#Configuration) as the incremental indexing.
 
 ## Setup
 

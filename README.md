@@ -10,18 +10,21 @@ The basic idea behind fragment indexing is that when people search for a phrase,
 
 Algolia already gives access to that metric used in their tie-break algorithm. Through the correct configuration options, this algorithm enables matches with the closest proximity of each other to be pushed forward. Fragment indexing goes a step further by ensuring that matches can only be found within the same fragment. In this case, a fragment consists of a heading and the immediate following text. The fragment stops at the next heading (or the end of the file).
 
+## Quick start
+
+1. Go through the [setup](#Setup).
+2. Create a piece of content in Kirby's panel and click 'Save'.
+3. Check your Algolia dashboard to see your indexed content.
+
 ## Setup
 
 ### Get the code
 
 ```
-$ git clone [URL] [KIRBY_ROOT]/site/plugins
+$ git clone https://github.com/mlbrgl/kirby-algolia [KIRBY_ROOT]/site/plugins
 ```
 
-where
-
-- [URL] is this repository URL
-- KIRBY_ROOT is the folder where you Kirby site lives
+where KIRBY_ROOT is the folder where you Kirby site lives.
 
 Then, run `composer install`.
 
@@ -30,35 +33,30 @@ Then, run `composer install`.
 In [KIRBY_ROOT]/site/config/config.php, add the configuration options:
 
 ```
-c::set('kirby-algolia', array(
-  'algolia' => array(
-    'application_id' => '[ALGOLIA_APP_ID]', // required
-    'index' => '[ALGOLIA_INDEX_NAME]', // required
-    'api_key' => '[ALGOLIA_API_KEY]' // required
-  ),
-  'blueprints' => array( // example, at least one blueprint required
-    'article' => array(
-      'fields' => array(
-        'meta' => array('title', 'author'), // example, optional
-        'boost' => array('teaser'), // example, optional
-        'main' => array('text') // example, required
-      )
-    ),
-    'news' => array(
-      'fields' => array(
-        'meta' => array('title', 'datetime'), // example, optional
-        'boost' => array('teaser'), // example, optional
-        'main' => array('text') // example, required
-      )
-    )
-  ),
-  //'debug' => array('dry_run')
-));
+// Example configuration options in config.php
+
+$config = [
+  "mlbrgl.kirby-algolia" => [
+    "algolia" => [
+      "application_id" => "[ALGOLIA_APP_ID]", // required
+      "index" => "[ALGOLIA_INDEX_NAME]", // required
+      "api_key" => "[ALGOLIA_API_KEY]" // required, needs to have write access to the ALGOLIA_INDEX_NAME
+      ],
+      "fields" => [
+        "article" => [ // example, at least one blueprint required
+          "meta" => ["title", "datetime", "author"], // example, optional. See description below.
+          "boost" => ["teaser"], // example, optional. See description below.
+          "main" => ["text"], // example, optional. See description below.
+        ],
+        ... // other blueprints, option
+      ],
+      "active" => true, // false to parse without sending to Algolia
+  ],
+  ... // other config
+;
 ```
 
-ALGOLIA_API_KEY needs to have write access to the ALGOLIA_INDEX_NAME.
-
-Each `fields` array is an array of field ids (defined in the site blueprints):
+Each blueprint array is an array of field IDs (defined in the site blueprints):
 
 - `meta` : if the whole content was indexed as a single record, each field would likely be an attribute on Algolia's side. However, in a fragmented context, we need to decide what fields are content and what fields are metadata attached to that content. This is the purpose of the `meta` array. As a starting point, title and author can be used here.
   - Expects raw text (no Markdown)
@@ -66,18 +64,6 @@ Each `fields` array is an array of field ids (defined in the site blueprints):
   - Expects raw text (no Markdown)
 - `main` : this is where you main content lives. Fragmentation will happen when a new heading is found.
   - Expects Markdown or Kirby's markdown flavor
-
-`content`:
-
-- `types`: what content types to index
-
-`debug`: debug options. Use `dry_run` to run the indexing process without communicating with Algolia.
-
-## Quick start
-
-1. Set the configuration options.
-2. Create a piece of content in Kirby's panel and click 'Save'.
-3. Check your Algolia dashboard to see you indexed content.
 
 ## Known limitations
 
@@ -93,12 +79,13 @@ Tests inherit the configuration from the parent site. This can be overriden in `
 
 ## Memory usage
 
-738 articles, 7,688 fragments
+Parsed 872 pages (8275 fragments) in 4.1703071594238 s.  
+Memory usage: 21.64 MB
 
-| Batches            | Top memory usage |
-| ------------------ | ---------------- |
-| _none_             | 33.97 MB         |
-| 50 pages at a time | 21.1 MB          |
+## Supported Kirby versions
+
+- Kirby 3: v3.x.x releases
+- Kirby 2: v1.x.x releases
 
 ## Unlicence
 

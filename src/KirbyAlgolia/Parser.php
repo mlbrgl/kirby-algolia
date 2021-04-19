@@ -29,6 +29,12 @@ class Parser
     $this->settings = $settings;
   }
 
+  /**
+   * Parses a page to extract fragments
+   *
+   * @param \Kirby\CMS\Page $page
+   * @return void
+   */
   public function parse($page)
   {
     $this->fragments = []; // reset internal array if parse() already called on this Parser instance
@@ -117,10 +123,11 @@ class Parser
     return $this->fragments;
   }
 
-  /*
+  /**
    * Add a fragment to the internal array after pre-processing.
    *
-   * @param      <type>  $fragment  The fragment
+   * @param Fragment $fragment
+   * @return void
    */
   public function add_fragment($fragment)
   {

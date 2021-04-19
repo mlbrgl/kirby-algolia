@@ -2,6 +2,10 @@
 
 namespace KirbyAlgolia;
 
+/**
+ * Fragments are the smallest indexable unit of content, made of a heading, some
+ * content, and some page meta-data.
+ */
 class Fragment
 {
   private $_id;
@@ -20,13 +24,14 @@ class Fragment
   public const DATETIME = "datetime";
 
   /**
-   * Sets the meta fields.
+   * Sets the meta fields
    *
    * Meta fields are the same for all fragments of a same page. They do not
    * create separate fragments but are rather attached to existing ones.
    *
-   * @param      string  $field_name  The field name
-   * @param      string  $value       The value
+   * @param string $field_name
+   * @param string $value
+   * @return void
    */
   public function set_meta($field_name, $value)
   {
@@ -34,11 +39,24 @@ class Fragment
   }
 
   /**
-   * Sets the fragment identifier.
+   * Sets the page ID
    *
-   * Format: [page_path]#[slugified_heading]--[fieldname][heading_count]
    *
-   * @param      string  $value  The value
+   * @param string $page_id
+   * @return void
+   */
+  public function set_page_id($page_id)
+  {
+    $this->_page_id = $page_id;
+  }
+
+  /**
+   * Sets the full ID
+   *
+   * Format: [page_id]#[fieldname]--[slugified_heading]--[heading_count]
+   *
+   * @param string $value
+   * @return void
    */
   public function set_id($value)
   {
@@ -46,13 +64,14 @@ class Fragment
   }
 
   /**
-   * Sets the importance.
+   * Sets the importance
    *
    * The importance can be used in Algolia as a business metric. It is based on
    * the heading level. h1 -> importance : 1, h2 -> importance : 2, etc ...
    * https://blog.algolia.com/how-to-build-a-helpful-search-for-technical-documentation-the-laravel-example/
    *
-   * @param      integer  $value  The value
+   * @param integer $value
+   * @return void
    */
   public function set_importance($value)
   {
@@ -60,9 +79,10 @@ class Fragment
   }
 
   /**
-   * Sets the content type.
+   * Sets the blueprint (intended template)
    *
-   * @param      <type>  $value  The value
+   * @param string $value
+   * @return void
    */
   public function set_blueprint($value)
   {
@@ -89,8 +109,21 @@ class Fragment
     return $this->_heading;
   }
 
-  /*
-   * Prepare fragment before exporting
+  /**
+   * Transforms kirbytext into raw text
+   *
+   * @param string $kirbytext
+   * @return string
+   */
+  public static function kirby_to_raw_text($kirbytext)
+  {
+    return trim(\Kirby\Toolkit\Html::decode(kirbytext($kirbytext)));
+  }
+
+  /**
+   * Prepares fragment
+   *
+   * @return void
    */
   public function preprocess()
   {
@@ -98,33 +131,11 @@ class Fragment
     $this->_heading = self::kirby_to_raw_text($this->_heading);
   }
 
-  public static function kirby_to_raw_text($kirbytext)
-  {
-    return trim(\Kirby\Toolkit\Html::decode(kirbytext($kirbytext)));
-  }
-
-  /*
-   * Resets fragment content while preserving meta and blueprint fields
-   */
-  public function reset()
-  {
-    $this->_id = null;
-    $this->_heading = null;
-    $this->_importance = null;
-    $this->_content = "";
-  }
-
-  /*
-   * Sets the base identifier.
+  /**
+   * Turns fragment into array
    *
-   * @param      <type>  $page   The page
-   *
+   * @return array
    */
-  public function set_page_id($page_id)
-  {
-    $this->_page_id = $page_id;
-  }
-
   public function to_array()
   {
     $fragment = [];
@@ -163,5 +174,18 @@ class Fragment
     }
 
     return $fragment;
+  }
+
+  /**
+   * Resets fragment content while preserving meta and blueprint fields
+   *
+   * @return void
+   */
+  public function reset()
+  {
+    $this->_id = null;
+    $this->_heading = null;
+    $this->_importance = null;
+    $this->_content = "";
   }
 }

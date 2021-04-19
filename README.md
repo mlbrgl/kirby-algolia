@@ -1,4 +1,5 @@
 # Kirby / Algolia integration
+![kirby 2](https://img.shields.io/badge/kirby-2-black) ![kirby 3](https://img.shields.io/badge/kirby-3-black) 
 
 This is a [Kirby](https://getkirby.com) plugin which enables incrementally sending new or updated content to [Algolia](https://www.algolia.com/) for indexing. Supports batch indexing all content through a CLI script.
 

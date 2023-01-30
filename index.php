@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__ . "/vendor/autoload.php";
+@include_once __DIR__ . "/vendor/autoload.php";
 use KirbyAlgolia\Index;
 
 $settings = option("mlbrgl.kirby-algolia");
